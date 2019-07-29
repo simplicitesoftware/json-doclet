@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
+import javax.swing.text.html.HTML.Tag;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,17 +16,28 @@ import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
-import com.sun.javadoc.Parameter;
 import com.sun.javadoc.RootDoc;
-import com.sun.javadoc.Tag;
-import com.sun.javadoc.Type;
 
+/**
+ * JSON doclet
+ * @author Simplicite Software
+ */
 public class JSONDoclet
 {
+	/** Destination directory */
 	private static final String DIR = "doc/java-json";
-	private static final boolean inherit = true;
-	private static final boolean debug = false;	
 
+	/** Inherit? */
+	private static final boolean inherit = true;
+
+	/** Debug? */
+	private static final boolean debug = false;
+
+	/**
+	 * Write class file
+	 * @param name Class name
+	 * @param json JSON data
+	 */
 	private static void write(final String name, final JSONObject json) throws IOException
 	{
 		File file = new File(DIR + "/" + name + ".json");
@@ -35,11 +48,21 @@ public class JSONDoclet
 		out.close();
 	}
 
+	/**
+	 * Convert a comment to a JSON-adapted string
+	 * @param c Comment
+	 * @return Converted comment
+	 */
 	private static String comment(final String c)
 	{
 		return c==null ? "" : c.replaceAll("[\n\r]*", "").replaceAll("[\\s]*[<]br[ ]*\\/?[>]", "\n");
 	}
 
+	/**
+	 * Constructors handler
+	 * @param classdoc Class doc
+	 * @return JSON array
+	 */
 	private static JSONArray constructors(final ClassDoc classdoc)
 	{
 		JSONArray constructors = new JSONArray();
@@ -92,6 +115,11 @@ public class JSONDoclet
 		return constructors;
 	}
 
+	/**
+	 * Fields handler
+	 * @param classdoc Class doc
+	 * @return JSON array
+	 */
 	private static JSONArray fields(final ClassDoc classdoc)
 	{
 		JSONArray fields = new JSONArray();
@@ -122,6 +150,11 @@ public class JSONDoclet
 		return fields;
 	}
 
+	/**
+	 * Methods handler
+	 * @param classdoc Class doc
+	 * @return JSON array
+	 */
 	private static JSONArray methods(final ClassDoc classdoc)
 	{
 		JSONArray methods = new JSONArray();
@@ -183,6 +216,12 @@ public class JSONDoclet
 		return methods;
 	}
 
+	/**
+	 * Classes handler
+	 * @param pkg Package
+	 * @param classdocs Class doc
+	 * @return Map of JSON objects
+	 */
 	private static HashMap<String, JSONObject> classes(final String pkg, final ClassDoc[] classdocs) throws IOException
 	{
 		HashMap<String, JSONObject> classes = new HashMap<>();
@@ -212,6 +251,13 @@ public class JSONDoclet
 		return classes;
 	}
 
+	/**
+	 * JSON arrays merge
+	 * @param c Child JSON array
+	 * @param p Parent JSON array
+	 * @param name Name
+	 * @return Merged JSON array
+	 */
 	private static JSONArray mergearray(final JSONArray c, final JSONArray p, final String name)
 	{
 		if (c == null) return p;
@@ -264,6 +310,11 @@ public class JSONDoclet
 		return merge(child, parent.optString("parent"), classes);
 	}
 
+	/**
+	 * Start
+	 * @param root Root
+	 * @return True if success
+	 */
 	public static boolean start(RootDoc root)
 	{
 		try
